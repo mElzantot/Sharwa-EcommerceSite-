@@ -1,0 +1,114 @@
+﻿@model EcommerceSite.Models.ViewModels.ProductDetailsViewModel;
+
+@{
+    ViewData["Title"] = "Ecommerce | Product Details";
+    string imgSliderId = "imgSlider";
+    string imgNumberId = "imgNumber";
+    List<Image> imgs = Model.Product.Images.ToList<Image>();
+
+}
+
+<!-- Listing Items -->
+<div class="product-details row" style="width:90rem">
+    <section class="product-details__main col-md-6">
+        <!-- images slider -->
+        <div class="slider">
+            <div class="slider__items mr-md-5">
+
+                @for (int i = 0; i < Model.Product.Images.Count; i++)
+                {
+                    <div class="slider__item pb-5" id="@imgSliderId@(i+1)">
+                        <img class="img-fluid" runat="server" id=@imgNumberId@(i+1) src="~/imgs/@imgs[i].ImgPath" />
+                    </div>
+                }
+
+            </div>
+            <div class="slider__indicators">
+                @for (int i = 0; i < Model.Product.Images.Count; i++)
+                {
+                    <span class="slider__indicator" id=@(i+1) onclick="activate(this)"></span>
+                }
+
+            </div>
+        </div>
+        <!-- product info -->
+        <div class="product-details__info">
+            <h1>@Model.Product.Name</h1>
+            <div class="rating">
+                <div class="rating__stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+                <div class="rating__data">
+                    2 reviews
+                </div>
+            </div>
+
+            <div class="product-details__amount">
+                @if (Model.Product.Discount > 0)
+                {
+                    <span style="text-decoration:line-through">@Model.Product.Price</span>
+                    <span>  $@(Model.Product.Price *  (1 -(Model.Product.Discount / 100)))</span>
+
+                }
+                else
+                {
+                    <span>$ @Model.Product.Price</span>
+                }
+            </div>
+            <p class="product-details__desc">
+                @Model.Product.ShortDisc
+            </p>
+            <div class="product-details__add">
+                <div class="increment-control">
+                    <a href="#" class="increment-control__action" onclick="decrease()">-</a>
+                    <input type="text" class="form-control" id="ProductQty" title="Qty" name="ProductQty" value="1">
+                    <a href="#" class="increment-control__action" onclick="increase()">+</a>
+                </div>
+                <a href="~/CartItem/AddToCart/@Model.Product.Id" class="btn btn--primary">Add to cart</a>
+            </div>
+            <div class="product-details__meta">
+                <input asp-for="Product.Id" type="hidden" />
+                <h2>Category</h2> @Html.ActionLink(Model.Product.Category.Name, "Index", "Home", new { id = Model.Product.FK_CategoryId });
+            </div>
+        </div>
+    </section>
+    <section class="tabs col-md-6">
+        <div class="tabs__headers">
+            <div class="tabs__header active">
+                Description
+            </div>
+        </div>
+        <div class="tabs__bodies">
+            <div class="tabs__body active">
+                <div class="product-details__desc">
+                    <p>
+                        @Model.Product.LongDisc
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+@section Scripts
+{
+    <script>
+        $('#imgSlider1').addClass('active');
+        $('#1').addClass('active');
+
+        var activate = function (e) {
+            $('.slider__indicator').removeClass('active');
+            $(e).addClass('active');
+            $('.slider__item').removeClass('active');
+            $(`#imgSlider${e.id}`).addClass('active');
+        }
+
+    </script>
+
+
+}

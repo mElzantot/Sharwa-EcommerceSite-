@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using EcommerceSite.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav col-3">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item w-75 d-flex justify-content-center">
+            @if (User.IsInRole("Seller"))
+            {
+                <div class="dropdown show h-100 d-flex">
+                    <a class="nav-link text-dark font-weight-bold align-self-center dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Hello @UserManager.GetUserName(User)!
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                        <a id="manage" class="dropdown-item font-weight-bold text-center" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Account</a>
+                        <a class="dropdown-item  " href="~/ProductsPage/SellerProducts/@UserManager.GetUserId(User)" title="Manage">Listed Items</a>
+                        <a class="dropdown-item  " href="~/Product/Add" title="Manage">Add Product</a>
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a id="manage" class="nav-link text-dark font-weight-bold text-center" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+            }
+        </li>
+        <li class="nav-item w-25">
+            <form id="logoutForm" class="form-inline d-flex justify-content-center" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" style="font-size:medium" class="nav-link btn btn-link">Logout</button>
+            </form>
+        </li>
+        }
+    else
+    {
+        <li class="nav-item w-50">
+            <a class="nav-link font-weight-bold text-center" style="font-size:medium" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item w-50">
+            <a class="nav-link font-weight-bold text-center" style="font-size:medium" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>

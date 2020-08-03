@@ -1,0 +1,190 @@
+﻿@model EcommerceSite.Models.ViewModels.EditProductViewModel;
+@using System.Security.Claims;
+@{
+    ViewData["Title"] = "Ecommerce | Edit Product";
+    var photoPath = "defaultImg.png";
+    string[] imgSrc = new string[3];
+    Image[] ProductImg = Model.Product.Images.ToArray();
+    int index = 0;
+    for (; index < ProductImg.Length; index++)
+    {
+        imgSrc[index] = ProductImg[index].ImgPath;
+    }
+    for (; index < imgSrc.Length; index++)
+    {
+        imgSrc[index] = photoPath;
+    }
+}
+
+
+<form enctype="multipart/form-data" method="post" class="add-product" asp-controller="Product" asp-action="Edit">
+        <div class="row" style="width:90rem">
+        <div class="add-product__images slider col-md-6">
+            <div class="add-product__image-actions">
+
+                <div class="add-product__image-action">
+                    <input asp-for="photo" class="custom-file-input" id="input1" style="display:none" onchange="upload(this,1)" name="photo" accept="image/*" />
+                    <a href="#"><i class="fas fa-plus-square addImg"></i></a>
+                    <a href="#"><i class="fas fa-trash-alt removeImg"></i></a>
+                </div>
+                <div class="add-product__image-action">
+                    <input asp-for="photo" class="custom-file-input" id="input2" style="display:none" onchange="upload(this,2)" name="photo" accept="image/*" />
+                </div>
+                <div class="add-product__image-action">
+                    <input asp-for="photo" class="custom-file-input" id="input3" style="display:none" onchange="upload(this,3)" name="photo" accept="image/*" />
+                </div>
+
+            </div>
+            <div class="slider__items">
+                <div class="slider__item pb-5 active" id="imgSlider1">
+                    <img class="img-fluid" id="imgNumber1" src="~/imgs/@imgSrc[0]" />
+                </div>
+
+                <div class="slider__item  pb-5" id="imgSlider2">
+                    <img class="img-fluid" id="imgNumber2" src="~/imgs/@imgSrc[1]" />
+                </div>
+
+                <div class="slider__item pb-5 " id="imgSlider3">
+                    <img class="img-fluid" id="imgNumber3" src="~/imgs/@imgSrc[2]" />
+                </div>
+            </div>
+
+            <div class="slider__indicators">
+                <span class="slider__indicator active" id="1" onclick="activate(this)"></span>
+                <span class="slider__indicator " id="2" onclick="activate(this)"></span>
+                <span class="slider__indicator " id="3" onclick="activate(this)"></span>
+            </div>
+        </div>
+
+        <div class="add-product__data col-md-6">
+            <div class="form-controls">
+                <section class="tabs">
+                    <div class="tabs__headers">
+                        <div class="tabs__header active">
+                            English
+                        </div>
+                    </div>
+                    <div class="tabs__bodies">
+                        <div class="tabs__body active">
+                            <div class="form-group ">
+                                <label asp-for="Product.Name"></label>
+                                <input asp-for="Product.Name" class="form-control" />
+                                <span asp-validation-for="Product.Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Product.LongDisc"></label>
+                                <textarea asp-for="Product.LongDisc" class="form-control" cols="30" rows="4"></textarea>
+                                <span asp-validation-for="Product.LongDisc" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Product.ShortDisc"></label>
+                                <input asp-for="Product.ShortDisc" class="form-control" cols="30" rows="2" />
+                                <span asp-validation-for="Product.ShortDisc" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="form-group mt-3">
+                    <label asp-for="Product.Stock"></label>
+                    <input asp-for="Product.Stock" class="form-control" />
+                    <span asp-validation-for="Product.Stock" class="text-danger"></span>
+                </div>
+                <div class="taged-textbox form-group">
+                    <label class="taged-textbox__lable" for="">Tags</label>
+                    <select name="tags" multiple data-role="tagsinput">
+                        @for (int i = 0; i < Model.tags.Count(); i++)
+                        {
+                           <option selected value="@Model.tags[i].Name">@Model.tags[i].Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Product.Price"></label>
+                    <input asp-for="Product.Price" class="form-control" />
+                    <span asp-validation-for="Product.Price"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.Discount"></label>
+                    <input asp-for="Product.Discount" class="form-control" />
+                    <span asp-validation-for="Product.Discount" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Product.ProductsPayments" style="text-decoration:underline"></label>
+                    <br />
+                    @for (int i = 0; i < Model.PaymentMethods.Count(); i++)
+                    {
+                        <input type="checkbox" asp-for="@Model.PaymentMethods[i].IsChecked" />
+                        <label asp-for="@Model.PaymentMethods[i].Id">@Model.PaymentMethods[i].Name</label>
+                        <input type="hidden" asp-for="@Model.PaymentMethods[i].Id " />
+                        <input type="hidden" asp-for="@Model.PaymentMethods[i].Name" />
+                        <br />
+                    }
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.FK_CategoryId"></label>
+                    <select asp-for="Product.FK_CategoryId" class="form-control"
+                            asp-items="new SelectList(Model.Categories,nameof(Category.Id),nameof(Category.Name))">
+                        <option>Select Category</option>
+                    </select>
+                    <span asp-validation-for="Product.FK_CategoryId" class="text-danger"></span>
+                </div>
+
+            </div>
+            <input type="submit" asp-route-id="@Model.Product.Id" value="Edit" class="btn btn-primary" />
+            <a asp-action="Index"  asp-controller="Home" class="btn btn-light"> Back To List</a>
+
+        </div>
+    </div>
+
+</form>
+
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var tagsinput = $('.bootstrap-tagsinput');
+        
+
+
+        $(document).ready(function () {
+            $('.addImg').on('click', function () {
+                var id = $('.slider__indicator.active').attr('id');
+                var input = $(`#input${id}`).trigger('click');
+            });
+        });
+
+        var upload = function (e, id) {
+            if (e.files && e.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log(e);
+                    var imgPath = e.target.result;
+                    $(`#imgNumber${id}`).attr('src', imgPath);
+                }
+                reader.readAsDataURL(e.files[0]);
+            }
+        };
+
+        var activate = function (e) {
+            $('.slider__indicator').removeClass('active');
+            $(e).addClass('active');
+            $('.slider__item').removeClass('active');
+            $(`#imgSlider${e.id}`).addClass('active');
+        }
+
+
+        $(document).ready(function () {
+            $('.removeImg').on('click', function () {
+                var id = $('.slider__indicator.active').attr('id');
+                var input = $(`#input${id}`);
+                input.replaceWith(input.val('').clone(true));
+                $(`#imgNumber${id}`).attr('src', '@photoPath');
+            });
+        });
+
+
+    </script>
+}

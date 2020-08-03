@@ -1,0 +1,109 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@model EcommerceSite.Models.ViewModels.ProductsPageViewModel
+@{
+    //Layout = null;
+}
+
+@section Styles{
+    <style>
+        .c-card-button {
+            opacity: 0;
+        }
+
+            .c-card-button:hover {
+                transition: 0.5s ease;
+                opacity: 0.9;
+            }
+
+            .c-card-button a {
+                font-size: large;
+                letter-spacing: 2px;
+            }
+
+        .card {
+            border: 1px solid White !important;
+        }
+
+            .card:hover {
+                transition: 0.5s ease;
+                border: 1px solid lightgrey !important;
+            }
+
+        .card-img-top {
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .card-text {
+            font-size: 16px;
+        }
+    </style>
+}
+
+<h3 class="align-self-start">@Model.Title</h3>
+<nav aria-label="Page navigation">
+    @{
+        var prev = Model.ProductsPage.PageNumber == 1 ? 1 : Model.ProductsPage.PageNumber - 1;
+        var next = Model.ProductsPage.PageNumber == Model.ProductsPage.PageCount ? Model.ProductsPage.PageCount : Model.ProductsPage.PageNumber + 1;
+    }
+    <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="./@Model.Id?page=@prev" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+        </li>
+        @for (int i = 1; i <= Model.ProductsPage.PageCount; i++)
+        {
+            <li class="page-item"><a class="page-link" href="./@Model.Id?page=@i&name=@Model.Title">@i</a></li>
+        }
+        <li class="page-item">
+            <a class="page-link" href="./@Model.Id?page=@next" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="card-group w-100 align-self-center">
+    <div class="row w-100">
+        @for (int i = 0; i < Model.ProductsPage.Count; i++)
+        {
+            var product = Model.ProductsPage.ToArray()[i];
+            <div class="card col-3 rounded-0">
+                <div class="card-body">
+                    <img alt="Not Available" class="card-img-top mb-5" src="~/imgs/@product.Images.FirstOrDefault().ImgPath" />
+                    <div class="card-img-overlay d-flex flex-column justify-content-center c-card-button">
+                        @if (ViewContext.RouteData.Values["Action"].ToString() != "SellerProducts")
+                        {
+                            <a href="~/Product/Details/@product.Id" class="btn btn-info mb-1 rounded-0 text-white">VIEW ITEM</a>
+                            <a href="~/CartItem/AddToCart/@product.Id" class="btn btn-secondary rounded-0 text-white">ADD TO CART</a>
+                        }
+                        else
+                        {
+                            <a href="~/Product/Edit/@product.Id" class="btn btn-info mb-1 rounded-0 text-white">VIEW ITEM</a>
+                        }
+                    </div>
+                    <h5 class="card-title font-weight-bold">@product.Name</h5>
+                    <p class="card-text mb-0">@product.ShortDisc</p>
+                    @if (product.Discount > 0)
+                    {
+                        var newPrice = product.Price * (1 - 0.01 * product.Discount);
+                        <label class="card-text mr-1 strocked">@product.Price L.E</label>
+                        <label class="card-text mr-1 font-weight-bold">@newPrice L.E</label>
+                        <label class="card-text">@product.Discount% off</label>
+                    }
+                    else
+                    {
+                        <label class="card-text font-weight-bold">@product.Price L.E</label>
+                        <label class="card-text"></label>
+                        <label class="card-text"></label>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
